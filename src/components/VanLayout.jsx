@@ -10,13 +10,63 @@ import storageImg from "../assets/images/storage.png";
 import partitionImg from "../assets/images/partition.png";
 
 const features = [
-  { id: "swivel", title: "Swivel Seat & Bed", desc: "Swivel double van seat with recline and bed conversion.", image: swivelImg },
-  { id: "dinette", title: "Dinette Cushion Set", desc: "South/North dinette benches that easily convert to a bed.", image: dinetteImg },
-  { id: "electrical", title: "Electrical Setup", desc: "600 amp hrs, inverter, DC to DC, fridge.", image: electricImg },
-  { id: "heating", title: "Heating System", desc: "Glycol heater system under the passenger seat.", image: heaterImg },
-  { id: "storage", title: "Storage", desc: "CNC-cut cabinets on driver’s side.", image: storageImg },
-  { id: "partition", title: "Partition & Bed Option", desc: "Two partition walls, supports S/N elevator bed.", image: partitionImg },
+  {
+  id: "swivel",
+  title: "Swivel Seat & Bed",
+  desc: "Swivel double van seat with recline and bed conversion.",
+  image: swivelImg,
+  modelPath: "/models/swivel.glb",
+  scale: 0.03, // 🔹 Tiny scale
+  cameraPosition: [0, 1.4, 16],
+}
+,
+  {
+    id: "dinette",
+    title: "Dinette Cushion Set",
+    desc: "South/North dinette benches that easily convert to a bed.",
+    image: dinetteImg,
+    modelPath: "/models/dinette.glb",
+    scale: 0.06, // 🔹 Tiny scale
+  cameraPosition: [0, 1.4, 16],
+  },
+  {
+    id: "electrical",
+    title: "Electrical Setup",
+    desc: "600 amp hrs, inverter, DC to DC, fridge.",
+    image: electricImg,
+    modelPath: "/models/electric.glb",
+    scale: 0.60,
+    cameraPosition: [0, 1.6, 10],
+  },
+  {
+    id: "heating",
+    title: "Heating System",
+    desc: "Glycol heater system under the passenger seat.",
+    image: heaterImg,
+    modelPath: "/models/heater.glb",
+    scale: 0.10,
+    cameraPosition: [0, 1.6, 8],
+  },
+  {
+    id: "storage",
+    title: "Storage",
+    desc: "CNC-cut cabinets on driver’s side.",
+    image: storageImg,
+    modelPath: "/models/storage.glb",
+    scale: 0.10,
+    cameraPosition: [0, 1.7, 11],
+  },
+  {
+    id: "partition",
+    title: "Partition & Bed Option",
+    desc: "Two partition walls, supports S/N elevator bed.",
+    image: partitionImg,
+    modelPath: "/models/wall.glb",
+    scale: 0.16,
+    cameraPosition: [0, 1.6, 10],
+  },
 ];
+
 
 const VanLayout = () => {
   const [selectedFeature, setSelectedFeature] = useState(null);
@@ -27,7 +77,6 @@ const VanLayout = () => {
 
   const startScroll = () => {
     if (scrollIntervalRef.current) return;
-
     const isMobile = window.innerWidth < 768;
     const container = isMobile ? mobileScrollRef.current : desktopScrollRef.current;
 
@@ -87,42 +136,46 @@ const VanLayout = () => {
       <h1 className="text-4xl font-bold text-center mb-4">Van Layout Model Viewer</h1>
 
       <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-
         <div className="w-full md:w-2/3 h-[280px] md:h-[360px]">
-          <VanModelCanvas selected={selectedFeature} />
+          <VanModelCanvas
+            modelPath={selectedFeature?.modelPath}
+            scale={selectedFeature?.scale}
+            cameraPosition={selectedFeature?.cameraPosition}
+          />
+
         </div>
 
-        {/* === Desktop Vertical Carousel === */}
-      <div className="hidden md:block w-[280px] h-[360px] relative bg-transparent ml-10">
-        <button
-          onClick={() => handleManualScroll("up")}
-          className="absolute -top-5 left-1/2 -translate-x-1/2 z-20 bg-black/50 hover:bg-black/70 p-1.5 rounded-full"
-        >
-          <ChevronUp className="text-white" size={18} />
-        </button>
-        <button
-          onClick={() => handleManualScroll("down")}
-          className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-20 bg-black/50 hover:bg-black/70 p-1.5 rounded-full"
-        >
-          <ChevronDown className="text-white" size={18} />
-        </button>
+        {/* Desktop Vertical Carousel */}
+        <div className="hidden md:block w-[280px] h-[360px] relative bg-transparent ml-10">
+          <button
+            onClick={() => handleManualScroll("up")}
+            className="absolute -top-5 left-1/2 -translate-x-1/2 z-20 bg-black/50 hover:bg-black/70 p-1.5 rounded-full"
+          >
+            <ChevronUp className="text-white" size={18} />
+          </button>
+          <button
+            onClick={() => handleManualScroll("down")}
+            className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-20 bg-black/50 hover:bg-black/70 p-1.5 rounded-full"
+          >
+            <ChevronDown className="text-white" size={18} />
+          </button>
 
-        <div ref={desktopScrollRef} className="overflow-hidden h-full pr-1">
-          <div className="flex flex-col items-center gap-5 w-full px-3 py-1.5">
-            {[...features, ...features].map((feat, index) => (
-              <FeatureCard
-                key={index}
-                {...feat}
-                active={selectedFeature === feat.id}
-                onClick={() => {
-                  pauseScrollTemporarily();
-                  setSelectedFeature((prev) => (prev === feat.id ? null : feat.id));
-                }}
-              />
-            ))}
+          <div ref={desktopScrollRef} className="overflow-hidden h-full pr-1">
+            <div className="flex flex-col items-center gap-5 w-full px-3 py-1.5">
+              {[...features, ...features].map((feat, index) => (
+                <FeatureCard
+                  key={index}
+                  {...feat}
+                  active={selectedFeature?.id === feat.id}
+                  onClick={() => {
+                    pauseScrollTemporarily();
+                    setSelectedFeature((prev) => (prev?.id === feat.id ? null : feat));
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
       </div>
 
       {/* Mobile Horizontal Scroll */}
@@ -149,25 +202,25 @@ const VanLayout = () => {
               key={index}
               {...feat}
               horizontal
-              active={selectedFeature === feat.id}
+              active={selectedFeature?.id === feat.id}
               onClick={() => {
                 pauseScrollTemporarily();
-                setSelectedFeature((prev) => (prev === feat.id ? null : feat.id));
+                setSelectedFeature((prev) => (prev?.id === feat.id ? null : feat));
               }}
             />
           ))}
         </div>
       </div>
 
-      {/* Layout Features heading and button below carousel */}
+      {/* Layout Features and Button */}
       <div className="mt-6 flex flex-col items-center justify-center text-center">
-        <h2 className="text-3xl font-semibold mb-3  ml-225">Layout Features</h2>
-        <button className="ml-225 bg-white text-black font-semibold py-2 px-6 rounded-full hover:scale-105 transition-transform duration-200">
-          More Layouts
+        <h2 className="text-3xl font-bold mb-3 ml-225">Layout Features</h2>
+        <button className="bg-white ml-225 text-black font-semibold py-2 px-6 rounded-full hover:scale-105 transition-transform duration-200">
+          More Layouts 
         </button>
       </div>
 
-      {/* Price & Buy Now */}
+      
       <div className="flex flex-col items-start -mt-20 px-4 gap-2">
         <div className="text-3xl font-bold animate-pulse ml-4">$39,000</div>
         <button
@@ -189,6 +242,3 @@ const VanLayout = () => {
 };
 
 export default VanLayout;
-
-
-

@@ -18,10 +18,10 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
         }
       `}
     >
-      {/* Title */}
+      
       <h3 className="font-bold text-lg text-center leading-tight">{title}</h3>
 
-      {/* Image + Description */}
+    
       <div className="flex gap-4 items-center">
         <div className="w-[80px] h-[60px] flex-shrink-0 overflow-hidden rounded-md">
           <img

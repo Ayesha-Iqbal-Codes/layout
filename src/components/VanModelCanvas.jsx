@@ -1,44 +1,68 @@
+import React, { Suspense, useMemo, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import {
+  OrbitControls,
+  useGLTF,
+  Center,
+  Html,
+  Environment,
+  ContactShadows,
+} from "@react-three/drei";
 
-const HighlightBox = ({ position, size = [0.5, 0.5, 0.5], color = "hotpink" }) => (
-  <mesh position={position}>
-    <boxGeometry args={size} />
-    <meshStandardMaterial color={color} />
-  </mesh>
-);
+const Model = ({ path, scale }) => {
+  const { scene } = useGLTF(path, true); // ✅ enable caching
 
-const VanModelCanvas = ({ selected }) => {
+  // Optional cleanup to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      scene?.traverse((child) => {
+        if (child.isMesh) {
+          child.geometry.dispose();
+          if (child.material?.dispose) child.material.dispose();
+        }
+      });
+    };
+  }, [scene]);
+
+  // Memoize model to avoid unnecessary re-renders
+  const model = useMemo(() => <primitive object={scene} scale={scale || 0.3} />, [scene, scale]);
+
+  return <Center>{model}</Center>;
+};
+
+const VanModelCanvas = ({ modelPath, scale, cameraPosition }) => {
   return (
-    <Canvas camera={{ position: [5, 3, 5], fov: 50 }}>
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[5, 5, 5]} intensity={0.8} />
+    <Canvas
+      camera={{ position: cameraPosition || [0, 1.5, 10], fov: 40 }}
+      style={{ width: "100%", height: "100%" }}
+      dpr={[1, 1.5]} // ✅ less GPU load
+      gl={{ alpha: true }}
+    >
+      <ambientLight intensity={0.7} />
+      <directionalLight position={[5, 10, 5]} intensity={1.2} />
+      <hemisphereLight skyColor="#ffffff" groundColor="#888888" intensity={1} />
+      <pointLight position={[0, -2, 0]} intensity={0.6} />
+      <Environment preset="city" />
 
-      <mesh position={[0, 1, 0]}>
-        <boxGeometry args={[4, 2, 1.5]} />
-        <meshStandardMaterial color="#cccccc" />
-      </mesh>
+      <Suspense
+        fallback={
+          <Html center>
+            <div style={{ fontSize: "1.1rem", color: "#ccc" }}>Loading Model...</div>
+          </Html>
+        }
+      >
+        {modelPath && <Model path={modelPath} scale={scale} />}
+      </Suspense>
 
-      {selected === "swivel" && (
-        <HighlightBox position={[-1.2, 1, 0.5]} color="orange" />
-      )}
-      {selected === "dinette" && (
-        <HighlightBox position={[1, 1, -0.6]} size={[1, 0.4, 0.4]} color="teal" />
-      )}
-      {selected === "electrical" && (
-        <HighlightBox position={[-1.5, 0.5, -0.6]} color="yellow" />
-      )}
-      {selected === "heating" && (
-        <HighlightBox position={[0.8, 0.5, 0.6]} color="red" />
-      )}
-      {selected === "storage" && (
-        <HighlightBox position={[1.5, 1.5, 0]} size={[1, 0.3, 0.3]} color="#4ADE80" />
-      )}
-      {selected === "partition" && (
-        <HighlightBox position={[0, 1, -0.75]} size={[3, 1.8, 0.1]} color="#93C5FD" />
-      )}
+      <ContactShadows
+        position={[0, -0.8, 0]}
+        opacity={0.4}
+        scale={10}
+        blur={2}
+        far={4}
+      />
 
-      <OrbitControls enableZoom={true} />
+      <OrbitControls enableZoom />
     </Canvas>
   );
 };
