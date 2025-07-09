@@ -34,8 +34,7 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
       {active && (
         <div className="absolute inset-0 border-2 border-white/20 rounded-xl pointer-events-none" />
       )}
-
-      {/* Image container - now fully transparent, no border */}
+      
       <div className={`
         ${horizontal ? "w-[100px] h-full" : "w-full h-[100px]"} 
         flex-shrink-0 

@@ -203,10 +203,10 @@ const VanLayout = () => {
           </div>
         </div>
 
-{/* Mobile View (Swipeable only) */}
+{/* Mobile View */}
 <div className="lg:hidden w-full mt-8 px-4">
   {/* Canvas Viewer */}
-  <div className="mb-6 rounded-xl overflow-hidden border border-black/10 bg-gradient-to-br from-white to-neutral-100">
+  <div className="mb-4 rounded-xl overflow-hidden border border-black/10 bg-gradient-to-br from-white to-neutral-100">
     <div className="w-full h-[300px] rounded-lg overflow-hidden">
       <VanModelCanvas
         key={selectedFeature?.id}
@@ -223,21 +223,36 @@ const VanLayout = () => {
     </div>
   </div>
 
-  {/* Swipeable Feature Cards (no auto-scroll, no buttons) */}
-  <div className="flex overflow-x-auto gap-4 pb-2 px-1 -mx-1 no-scrollbar scroll-smooth" ref={mobileScrollRef}>
+  {/* 👉 Simple More Layouts button below canvas */}
+  <div className="mb-4 flex justify-end">
+    <button
+      onClick={() => console.log("More Layouts clicked")} // Add your logic here
+      className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black"
+    >
+      More Layouts
+    </button>
+  </div>
+
+  {/* Swipeable Feature Cards */}
+  <div
+    className="flex overflow-x-auto gap-4 pb-2 px-1 -mx-1 no-scrollbar scroll-smooth"
+    ref={mobileScrollRef}
+  >
     {features.map((feat, index) => (
       <div key={index} ref={(el) => (mobileCardRefs.current[index] = el)}>
         <FeatureCard
           {...feat}
           horizontal
           active={selectedFeature?.id === feat.id}
-          onClick={() => setSelectedFeature((prev) => prev?.id === feat.id ? null : feat)}
+          onClick={() =>
+            setSelectedFeature((prev) => (prev?.id === feat.id ? null : feat))
+          }
         />
       </div>
     ))}
   </div>
 
-  {/* Mobile Bottom Info & Button */}
+  {/* Mobile Bottom Info & Buy Button */}
   <div className="mt-8 flex justify-between items-center">
     <div>
       <div className="text-2xl font-bold">$39,000</div>
@@ -248,7 +263,6 @@ const VanLayout = () => {
     </button>
   </div>
 </div>
-
 
       </main>
     </div>

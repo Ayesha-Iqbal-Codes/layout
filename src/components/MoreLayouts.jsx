@@ -40,7 +40,7 @@ const vanLayouts = [
 ];
 
 const MoreLayoutsPage = () => {
-  const navigate = useNavigate(); // optional
+  const navigate = useNavigate(); 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#55427B] via-[#586584] to-[#597588] text-white py-10 px-6">
@@ -52,8 +52,7 @@ const MoreLayoutsPage = () => {
             key={van.id}
             className="bg-white/10 p-6 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform duration-300 hover:scale-105 cursor-pointer"
             onClick={() => {
-              // navigate(`/layout/${van.id}`);
-              // OR open a modal/viewer
+       
             }}
           >
             <img

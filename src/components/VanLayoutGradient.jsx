@@ -145,7 +145,7 @@ return (
   cameraPosition={selectedFeature?.cameraPosition}
 />
 
-      </div>
+</div>
 
       {/* Desktop Vertical Carousel */}
       <div className="hidden md:block w-[300px] h-[360px] relative bg-transparent ml-10">

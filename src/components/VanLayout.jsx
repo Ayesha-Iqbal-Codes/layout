@@ -1,12 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import FeatureCard from "./FeatureCard";
 import VanModelCanvas from "./VanModelCanvas";
-import {
-  ChevronRight,
-  ChevronLeft,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+import { ChevronRight, Expand, X } from "lucide-react";
 
 import swivelImg from "../assets/images/swivel.png";
 import dinetteImg from "../assets/images/dinette.png";
@@ -75,42 +70,126 @@ const features = [
 
 const VanLayout = () => {
   const [selectedFeature, setSelectedFeature] = useState(features[0]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showFullscreen, setShowFullscreen] = useState(false);
   const desktopScrollRef = useRef(null);
   const mobileScrollRef = useRef(null);
-  const scrollIntervalRef = useRef(null);
-  const pauseTimeout = useRef(null);
   const mobileCardRefs = useRef([]);
 
-   return (
+  return (
     <div className="min-h-screen bg-white text-black">
+      {/* Header */}
       <header className="sticky top-0 z-50 bg-white w-full border-b border-black/10 px-6 py-6 flex justify-between items-center">
-        
-        {/* Left: Logo and Title */}
         <div className="flex items-center gap-3">
-          {/* Always show logo */}
-          <img
-            src={logo}
-            alt="Big Bear Vans Logo"
-            className="h-8 w-auto"
-          />
-
-          {/* Only show text on desktop */}
+          <img src={logo} alt="Big Bear Vans Logo" className="h-8 w-auto" />
           <div className="hidden lg:block text-2xl font-light tracking-wider">
             BIG BEAR<span className="font-bold"> VANS</span>
           </div>
         </div>
-
-        {/* Right: Button */}
         <button className="bg-black text-white px-6 py-2 rounded-full font-medium hover:bg-neutral-800 transition-colors">
           Contact Now
         </button>
       </header>
-    
+
       <main className="relative min-h-screen">
-        <div className="hidden lg:flex flex-col fixed top-[104px] left-6 w-[61%] h-[calc(100vh-124px)] z-10">
-          <h1 className="text-2xl font-bold text-center mb-4">Van Layout Model Viewer</h1>
-          <div className="flex-1 p-6 bg-gradient-to-br from-white to-neutral-100 rounded-xl overflow-hidden border border-black/10 relative">
-            <div className="h-full w-full overflow-hidden rounded-lg">
+        {/* Desktop View */}
+        {!showFullscreen && (
+          <>
+            <div className="hidden lg:flex flex-col fixed top-[104px] left-6 w-[61%] h-[calc(100vh-124px)] z-10">
+              <h1 className="text-2xl font-bold text-center mb-4">Van Layout Model Viewer</h1>
+              <div className="flex-1 p-6 bg-gradient-to-br from-white to-neutral-100 rounded-xl overflow-hidden border border-black/10 relative">
+                {/* Zoom Button */}
+                <button
+                  onClick={() => {
+                    setShowFullscreen(true);
+                    setTimeout(() => setIsFullscreen(true), 10);
+                  }}
+                  className="absolute bottom-6 left-6 z-20 bg-white shadow-lg rounded-full p-2 hover:scale-105 transition"
+                >
+                  <Expand size={20} className="text-black" />
+                </button>
+
+                {/* Canvas */}
+                <div className="h-full w-full overflow-hidden rounded-lg">
+                  <VanModelCanvas
+                    key={selectedFeature?.id}
+                    modelPath={selectedFeature?.modelPath}
+                    scale={selectedFeature?.scale}
+                    cameraPosition={selectedFeature?.cameraPosition}
+                  />
+                </div>
+
+                {/* Feature Description Overlay */}
+                <div className="absolute bottom-6 right-6 max-w-[300px] bg-black/10 backdrop-blur-sm p-4 rounded-xl border border-black/10">
+                  <h3 className="text-xl font-medium mb-1">{selectedFeature?.title}</h3>
+                  <p className="text-neutral-700 text-sm">{selectedFeature?.desc}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Layout Features Panel */}
+     
+<div className="hidden lg:block fixed top-[72px] right-0 w-[36%] h-[32px] bg-white z-40"></div>
+
+ <div className="hidden lg:flex flex-col ml-[64%] px-6 pt-0">
+  <div className="sticky top-[96px] z-50 bg-white py-2 mb-4">
+    <h1 className="text-2xl font-bold  text-center text-black">Layout Features</h1>
+  </div>
+
+
+              <div ref={desktopScrollRef} className="flex flex-col items-center gap-4">
+                {features.map((feat, index) => (
+                  <FeatureCard
+                    key={index}
+                    {...feat}
+                    active={selectedFeature?.id === feat.id}
+                    onClick={() =>
+                      setSelectedFeature((prev) => (prev?.id === feat.id ? null : feat))
+                    }
+                  />
+                ))}
+              </div>
+
+              {/* Price & Buttons */}
+              <div className="flex flex-col items-center gap-3 px-4 py-8 border-t border-black/10 bg-black/5 mt-6">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="text-2xl font-bold">$39,000</div>
+                  <div className="flex flex-col items-center gap-3">
+                    <button
+                      className="relative overflow-hidden bg-black text-white font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform"
+                      style={{ animation: "pulseZoom 2s infinite" }}
+                    >
+                      <span className="relative z-10">BUY NOW</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
+                    </button>
+                    <button className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black">
+                      More Layouts <span className="text-lg">››</span>
+                    </button>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Fullscreen Canvas Overlay */}
+        {showFullscreen && (
+          <div
+            className={`fixed inset-0 z-[999] bg-white flex items-center justify-center transition-opacity duration-500 ${
+              isFullscreen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            }`}
+          >
+            <button
+              onClick={() => {
+                setIsFullscreen(false);
+                setTimeout(() => setShowFullscreen(false), 500);
+              }}
+              className="absolute top-4 right-4 z-[1000] bg-white text-black hover:bg-neutral-200 p-2 rounded-full shadow"
+            >
+              <X size={20} />
+            </button>
+            <div className="w-full h-full">
               <VanModelCanvas
                 key={selectedFeature?.id}
                 modelPath={selectedFeature?.modelPath}
@@ -118,62 +197,14 @@ const VanLayout = () => {
                 cameraPosition={selectedFeature?.cameraPosition}
               />
             </div>
-
-            <div className="absolute bottom-6 right-6 max-w-[300px] bg-black/10 backdrop-blur-sm p-4 rounded-xl border border-black/10">
-              <h3 className="text-xl font-medium mb-1">{selectedFeature?.title}</h3>
-              <p className="text-neutral-700 text-sm">{selectedFeature?.desc}</p>
-            </div>
           </div>
-        </div>
-{/* White gap filler box on right side below navbar */}
-<div className="hidden lg:block fixed top-[72px] right-0 w-[36%] h-[32px] bg-white z-40"></div>
+        )}
 
- <div className="hidden lg:flex flex-col ml-[64%] px-6 pt-0">
-  <div className="sticky top-[96px] z-50 bg-white py-2 mb-4">
-    <h1 className="text-2xl font-bold  text-center text-black">Layout Features</h1>
-  </div>
-         
-          <div ref={desktopScrollRef} className="flex flex-col items-center gap-4">
-            {features.map((feat, index) => (
-              <FeatureCard
-                key={index}
-                {...feat}
-                active={selectedFeature?.id === feat.id}
-                onClick={() => {
-                  pauseScrollTemporarily();
-                  setSelectedFeature((prev) => (prev?.id === feat.id ? null : feat));
-                }}
-              />
-            ))}
-          </div>
-
-       <div className="flex flex-col items-center gap-3 px-4 py-8 border-t border-black/10 bg-black/5 mt-6">
-  <div className="flex flex-col items-center gap-4 text-center">
-    {/* Price */}
-    <div className="text-2xl font-bold">$39,000</div>
-
-    {/* Buttons */}
-    <div className="flex flex-col items-center gap-3">
-      <button
-        className="relative overflow-hidden bg-black text-white font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform"
-        style={{ animation: "pulseZoom 2s infinite" }}
-      >
-        <span className="relative z-10">BUY NOW</span>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
-      </button>
-
-      <button className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black">
-        More Layouts <ChevronRight size={16} />
-      </button>
-    </div>
-  </div>
-</div>
-
-        </div>
-{/* Mobile View (Swipeable only) */}
+ 
+{/* Mobile View */}
 <div className="lg:hidden w-full mt-8 px-4">
   {/* Canvas Viewer */}
-  <div className="mb-6 rounded-xl overflow-hidden border border-black/10 bg-gradient-to-br from-white to-neutral-100">
+  <div className="mb-4 rounded-xl overflow-hidden border border-black/10 bg-gradient-to-br from-white to-neutral-100">
     <div className="w-full h-[300px] rounded-lg overflow-hidden">
       <VanModelCanvas
         key={selectedFeature?.id}
@@ -190,21 +221,37 @@ const VanLayout = () => {
     </div>
   </div>
 
-  {/* Swipeable Feature Cards (no auto-scroll, no buttons) */}
-  <div className="flex overflow-x-auto gap-4 pb-2 px-1 -mx-1 no-scrollbar scroll-smooth" ref={mobileScrollRef}>
+ {/* 👉 Simple More Layouts button below canvas */}
+<div className="mb-4 flex justify-end">
+  <button
+    onClick={() => console.log("More Layouts clicked")} // Add your logic here
+    className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black"
+  >
+    More Layouts <span className="text-lg">»</span>
+  </button>
+</div>
+
+
+  {/* Swipeable Feature Cards */}
+  <div
+    className="flex overflow-x-auto gap-4 pb-2 px-1 -mx-1 no-scrollbar scroll-smooth"
+    ref={mobileScrollRef}
+  >
     {features.map((feat, index) => (
       <div key={index} ref={(el) => (mobileCardRefs.current[index] = el)}>
         <FeatureCard
           {...feat}
           horizontal
           active={selectedFeature?.id === feat.id}
-          onClick={() => setSelectedFeature((prev) => prev?.id === feat.id ? null : feat)}
+          onClick={() =>
+            setSelectedFeature((prev) => (prev?.id === feat.id ? null : feat))
+          }
         />
       </div>
     ))}
   </div>
 
-  {/* Mobile Bottom Info & Button */}
+  {/* Mobile Bottom Info & Buy Button */}
   <div className="mt-8 flex justify-between items-center">
     <div>
       <div className="text-2xl font-bold">$39,000</div>
@@ -215,6 +262,7 @@ const VanLayout = () => {
     </button>
   </div>
 </div>
+
 
 
       </main>
