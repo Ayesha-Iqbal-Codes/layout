@@ -4,7 +4,7 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
       onClick={onClick}
       className={`
         cursor-pointer 
-        text-black 
+        text-white 
         p-4 
         rounded-xl 
         border 
@@ -20,22 +20,22 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
         ${
           horizontal
             ? "min-w-[280px] h-[160px]" 
-            : "w-full max-w-[400px] h-[180px]"
+            : "w-full max-w-[300px] h-[180px]"
         }
 
         ${
           active
-            ? "bg-white border-black/30 shadow-lg scale-[1.02]"
-            : "bg-white/80 border-black/20 hover:bg-white hover:border-black/30"
+            ? "bg-neutral-800 border-neutral-500 shadow-lg scale-[1.02]"
+            : "bg-neutral-800/70 border-neutral-700 hover:bg-neutral-800 hover:border-neutral-600"
         }
       `}
     >
       {/* Active state indicator */}
       {active && (
-        <div className="absolute inset-0 border-2 border-black/10 rounded-xl pointer-events-none" />
+        <div className="absolute inset-0 border-2 border-white/20 rounded-xl pointer-events-none" />
       )}
 
-      {/* Image container */}
+      {/* Image container - now fully transparent, no border */}
       <div className={`
         ${horizontal ? "w-[100px] h-full" : "w-full h-[100px]"} 
         flex-shrink-0 
@@ -57,14 +57,14 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
         <h3 className="font-medium text-lg leading-tight mb-1.5">
           {title}
         </h3>
-        <p className="text-neutral-700 text-sm leading-snug">
+        <p className="text-neutral-300 text-sm leading-snug">
           {desc}
         </p>
 
         {/* Active indicator bar */}
         {active && (
-          <div className="mt-auto pt-2 border-t border-black/20">
-            <div className="w-4 h-1 bg-black rounded-full" />
+          <div className="mt-auto pt-2 border-t border-neutral-700">
+            <div className="w-4 h-1 bg-white rounded-full" />
           </div>
         )}
       </div>

@@ -14,7 +14,6 @@ import electricImg from "../assets/images/electric.png";
 import heaterImg from "../assets/images/heater.png";
 import storageImg from "../assets/images/storage.png";
 import partitionImg from "../assets/images/partition.png";
-import logo from "../assets/images/logobbv.jpg";
 
 const features = [
   {
@@ -81,31 +80,72 @@ const VanLayout = () => {
   const pauseTimeout = useRef(null);
   const mobileCardRefs = useRef([]);
 
-   return (
+  const startScroll = () => {
+    if (scrollIntervalRef.current) return;
+    const isMobile = window.innerWidth < 768;
+    const container = isMobile ? mobileScrollRef.current : desktopScrollRef.current;
+
+    scrollIntervalRef.current = setInterval(() => {
+      if (!container) return;
+      if (isMobile) {
+        container.scrollLeft += 2;
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0;
+        }
+      } else {
+        container.scrollTop += 1;
+        if (container.scrollTop >= container.scrollHeight / 2) {
+          container.scrollTop = 0;
+        }
+      }
+    }, 30);
+  };
+
+  const stopScroll = () => {
+    clearInterval(scrollIntervalRef.current);
+    scrollIntervalRef.current = null;
+  };
+
+  const pauseScrollTemporarily = () => {
+    stopScroll();
+    clearTimeout(pauseTimeout.current);
+    pauseTimeout.current = setTimeout(() => {
+      startScroll();
+    }, 3000);
+  };
+
+  const handleManualScroll = (direction) => {
+    const container = desktopScrollRef.current;
+    if (!container) return;
+    pauseScrollTemporarily();
+    const amount = direction === "up" ? -100 : 100;
+    container.scrollBy({ top: amount, behavior: "smooth" });
+  };
+
+  const handleMobileManualScroll = (direction) => {
+    const container = mobileScrollRef.current;
+    if (!container) return;
+    pauseScrollTemporarily();
+    const amount = direction === "left" ? -100 : 100;
+    container.scrollBy({ left: amount, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    startScroll();
+    return stopScroll;
+  }, []);
+
+  return (
     <div className="min-h-screen bg-white text-black">
       <header className="sticky top-0 z-50 bg-white w-full border-b border-black/10 px-6 py-6 flex justify-between items-center">
-        
-        {/* Left: Logo and Title */}
-        <div className="flex items-center gap-3">
-          {/* Always show logo */}
-          <img
-            src={logo}
-            alt="Big Bear Vans Logo"
-            className="h-8 w-auto"
-          />
-
-          {/* Only show text on desktop */}
-          <div className="hidden lg:block text-2xl font-light tracking-wider">
-            BIG BEAR<span className="font-bold"> VANS</span>
-          </div>
+        <div className="text-2xl font-light tracking-wider">
+          BIG BEAR<span className="font-bold"> VANS</span>
         </div>
-
-        {/* Right: Button */}
         <button className="bg-black text-white px-6 py-2 rounded-full font-medium hover:bg-neutral-800 transition-colors">
-          Contact Now
+          Contact Now 🡕
         </button>
       </header>
-    
+
       <main className="relative min-h-screen">
         <div className="hidden lg:flex flex-col fixed top-[104px] left-6 w-[61%] h-[calc(100vh-124px)] z-10">
           <h1 className="text-2xl font-bold text-center mb-4">Van Layout Model Viewer</h1>
@@ -132,7 +172,7 @@ const VanLayout = () => {
   <div className="sticky top-[96px] z-50 bg-white py-2 mb-4">
     <h1 className="text-2xl font-bold  text-center text-black">Layout Features</h1>
   </div>
-         
+     
           <div ref={desktopScrollRef} className="flex flex-col items-center gap-4">
             {features.map((feat, index) => (
               <FeatureCard
@@ -147,29 +187,22 @@ const VanLayout = () => {
             ))}
           </div>
 
-       <div className="flex flex-col items-center gap-3 px-4 py-8 border-t border-black/10 bg-black/5 mt-6">
-  <div className="flex flex-col items-center gap-4 text-center">
-    {/* Price */}
-    <div className="text-2xl font-bold">$39,000</div>
 
-    {/* Buttons */}
-    <div className="flex flex-col items-center gap-3">
-      <button
-        className="relative overflow-hidden bg-black text-white font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform"
-        style={{ animation: "pulseZoom 2s infinite" }}
-      >
-        <span className="relative z-10">BUY NOW</span>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
-      </button>
-
-      <button className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black">
-        More Layouts <ChevronRight size={16} />
-      </button>
-    </div>
-  </div>
-</div>
-
+          <div className="flex flex-col items-center gap-3 px-4 py-8 border-t border-black/10 bg-black/5 mt-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold">$39,000</div>
+             
+            </div>
+            <button className="relative overflow-hidden bg-black text-white font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform">
+              <span className="relative z-10">BUY NOW</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
+            </button>
+            <button className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black">
+              More Layouts <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
+
 {/* Mobile View (Swipeable only) */}
 <div className="lg:hidden w-full mt-8 px-4">
   {/* Canvas Viewer */}

@@ -1,5 +1,5 @@
-import React, { Suspense, useMemo, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
+import React, { Suspense, useMemo, useEffect, useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import {
   OrbitControls,
   useGLTF,
@@ -10,9 +10,17 @@ import {
 } from "@react-three/drei";
 
 const Model = ({ path, scale }) => {
-  const { scene } = useGLTF(path, true); // ✅ enable caching
+  const { scene } = useGLTF(path, true);
+  const modelRef = useRef();
 
-  // Optional cleanup to avoid memory leaks
+  
+  useFrame(() => {
+    if (modelRef.current) {
+      modelRef.current.rotation.y += 0.005; 
+    }
+  });
+
+  
   useEffect(() => {
     return () => {
       scene?.traverse((child) => {
@@ -24,8 +32,10 @@ const Model = ({ path, scale }) => {
     };
   }, [scene]);
 
-  // Memoize model to avoid unnecessary re-renders
-  const model = useMemo(() => <primitive object={scene} scale={scale || 0.3} />, [scene, scale]);
+  const model = useMemo(
+    () => <primitive ref={modelRef} object={scene} scale={scale || 0.3} />,
+    [scene, scale]
+  );
 
   return <Center>{model}</Center>;
 };
@@ -35,7 +45,7 @@ const VanModelCanvas = ({ modelPath, scale, cameraPosition }) => {
     <Canvas
       camera={{ position: cameraPosition || [0, 1.5, 10], fov: 40 }}
       style={{ width: "100%", height: "100%" }}
-      dpr={[1, 1.5]} // ✅ less GPU load
+      dpr={[1, 1.5]}
       gl={{ alpha: true }}
     >
       <ambientLight intensity={0.7} />
@@ -62,7 +72,7 @@ const VanModelCanvas = ({ modelPath, scale, cameraPosition }) => {
         far={4}
       />
 
-      <OrbitControls enableZoom />
+      <OrbitControls enableZoom enablePan={false} />
     </Canvas>
   );
 };
