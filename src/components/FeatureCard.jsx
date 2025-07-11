@@ -25,7 +25,7 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
 
         ${
           active
-            ? "bg-white border-black/30 shadow-lg scale-[1.02]"
+            ? "bg-neutral-100 border-black/30 shadow-lg scale-[1.02]"
             : "bg-white/80 border-black/20 hover:bg-white hover:border-black/30"
         }
       `}

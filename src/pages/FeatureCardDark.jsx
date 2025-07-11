@@ -68,7 +68,7 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
         )}
       </div>
     </div>
-  );
+   );
 };
 
 export default FeatureCard;

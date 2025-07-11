@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import FeatureCard from "./FeatureCard";
 import VanModelCanvas from "./VanModelCanvas";
 import { ChevronRight, Expand, X } from "lucide-react";
@@ -72,9 +72,28 @@ const VanLayout = () => {
   const [selectedFeature, setSelectedFeature] = useState(features[0]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
+  const [isBuyNowVisible, setIsBuyNowVisible] = useState(true);
+
   const desktopScrollRef = useRef(null);
+  const desktopBuyNowRef = useRef(null);
   const mobileScrollRef = useRef(null);
   const mobileCardRefs = useRef([]);
+  const buyNowRef = useRef(null);
+
+ useEffect(() => {
+  const observer = new IntersectionObserver(
+    ([entry]) => setIsBuyNowVisible(entry.isIntersecting),
+    { threshold: 0.1 }
+  );
+
+  if (buyNowRef.current) observer.observe(buyNowRef.current);
+  if (desktopBuyNowRef.current) observer.observe(desktopBuyNowRef.current);
+
+  return () => {
+    if (buyNowRef.current) observer.unobserve(buyNowRef.current);
+    if (desktopBuyNowRef.current) observer.unobserve(desktopBuyNowRef.current);
+  };
+}, []);
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -98,7 +117,6 @@ const VanLayout = () => {
             <div className="hidden lg:flex flex-col fixed top-[104px] left-6 w-[61%] h-[calc(100vh-124px)] z-10">
               <h1 className="text-2xl font-bold text-center mb-4">Van Layout Model Viewer</h1>
               <div className="flex-1 p-6 bg-gradient-to-br from-white to-neutral-100 rounded-xl overflow-hidden border border-black/10 relative">
-                {/* Zoom Button */}
                 <button
                   onClick={() => {
                     setShowFullscreen(true);
@@ -109,7 +127,6 @@ const VanLayout = () => {
                   <Expand size={20} className="text-black" />
                 </button>
 
-                {/* Canvas */}
                 <div className="h-full w-full overflow-hidden rounded-lg">
                   <VanModelCanvas
                     key={selectedFeature?.id}
@@ -119,7 +136,6 @@ const VanLayout = () => {
                   />
                 </div>
 
-                {/* Feature Description Overlay */}
                 <div className="absolute bottom-6 right-6 max-w-[300px] bg-black/10 backdrop-blur-sm p-4 rounded-xl border border-black/10">
                   <h3 className="text-xl font-medium mb-1">{selectedFeature?.title}</h3>
                   <p className="text-neutral-700 text-sm">{selectedFeature?.desc}</p>
@@ -127,15 +143,12 @@ const VanLayout = () => {
               </div>
             </div>
 
-            {/* Layout Features Panel */}
-     
-<div className="hidden lg:block fixed top-[72px] right-0 w-[36%] h-[32px] bg-white z-40"></div>
+            <div className="hidden lg:block fixed top-[72px] right-0 w-[36%] h-[32px] bg-white z-40"></div>
 
- <div className="hidden lg:flex flex-col ml-[64%] px-6 pt-0">
-  <div className="sticky top-[96px] z-50 bg-white py-2 mb-4">
-    <h1 className="text-2xl font-bold  text-center text-black">Layout Features</h1>
-  </div>
-
+            <div className="hidden lg:flex flex-col ml-[64%] px-6 pt-0">
+              <div className="sticky top-[96px] z-50 bg-white py-2 mb-4">
+                <h1 className="text-2xl font-bold text-center text-black">Layout Features</h1>
+              </div>
 
               <div ref={desktopScrollRef} className="flex flex-col items-center gap-4">
                 {features.map((feat, index) => (
@@ -150,8 +163,8 @@ const VanLayout = () => {
                 ))}
               </div>
 
-              {/* Price & Buttons */}
-              <div className="flex flex-col items-center gap-3 px-4 py-8 border-t border-black/10 bg-black/5 mt-6">
+              <div className="flex flex-col items-center gap-3 px-4 py-8 border-t border-black/10 bg-black/5 mt-6" ref={desktopBuyNowRef}>
+
                 <div className="flex flex-col items-center gap-4 text-center">
                   <div className="text-2xl font-bold">$39,000</div>
                   <div className="flex flex-col items-center gap-3">
@@ -165,7 +178,6 @@ const VanLayout = () => {
                     <button className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black">
                       More Layouts <span className="text-lg">››</span>
                     </button>
-
                   </div>
                 </div>
               </div>
@@ -173,7 +185,7 @@ const VanLayout = () => {
           </>
         )}
 
-        {/* Fullscreen Canvas Overlay */}
+        {/* Fullscreen Canvas */}
         {showFullscreen && (
           <div
             className={`fixed inset-0 z-[999] bg-white flex items-center justify-center transition-opacity duration-500 ${
@@ -200,69 +212,78 @@ const VanLayout = () => {
           </div>
         )}
 
- 
-{/* Mobile View */}
-<div className="lg:hidden w-full mt-8 px-4">
-  {/* Canvas Viewer */}
-  <div className="mb-4 rounded-xl overflow-hidden border border-black/10 bg-gradient-to-br from-white to-neutral-100">
-    <div className="w-full h-[300px] rounded-lg overflow-hidden">
-      <VanModelCanvas
-        key={selectedFeature?.id}
-        modelPath={selectedFeature?.modelPath}
-        scale={selectedFeature?.scale}
-        cameraPosition={selectedFeature?.cameraPosition}
-      />
-    </div>
+        {/* Mobile View */}
+        <div className="lg:hidden w-full mt-8 px-4">
+          <div className="mb-4 rounded-xl overflow-hidden border border-black/10 bg-gradient-to-br from-white to-neutral-100">
+            <div className="w-full h-[300px] rounded-lg overflow-hidden">
+              <VanModelCanvas
+                key={selectedFeature?.id}
+                modelPath={selectedFeature?.modelPath}
+                scale={selectedFeature?.scale}
+                cameraPosition={selectedFeature?.cameraPosition}
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="text-xl font-medium mb-1">{selectedFeature?.title}</h3>
+              <p className="text-neutral-700 text-sm">{selectedFeature?.desc}</p>
+            </div>
+          </div>
 
-    {/* Feature text overlay */}
-    <div className="p-4">
-      <h3 className="text-xl font-medium mb-1">{selectedFeature?.title}</h3>
-      <p className="text-neutral-700 text-sm">{selectedFeature?.desc}</p>
-    </div>
-  </div>
+          <div className="mb-4 flex justify-end">
+            <button
+              onClick={() => console.log("More Layouts clicked")}
+              className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black"
+            >
+              More Layouts <span className="text-lg">»</span>
+            </button>
+          </div>
 
- {/* 👉 Simple More Layouts button below canvas */}
-<div className="mb-4 flex justify-end">
-  <button
-    onClick={() => console.log("More Layouts clicked")} // Add your logic here
-    className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black"
-  >
-    More Layouts <span className="text-lg">»</span>
-  </button>
-</div>
+          <div
+            className="flex overflow-x-auto gap-4 pb-2 px-1 -mx-1 no-scrollbar scroll-smooth"
+            ref={mobileScrollRef}
+          >
+            {features.map((feat, index) => (
+              <div key={index} ref={(el) => (mobileCardRefs.current[index] = el)}>
+                <FeatureCard
+                  {...feat}
+                  horizontal
+                  active={selectedFeature?.id === feat.id}
+                  onClick={() =>
+                    setSelectedFeature((prev) => (prev?.id === feat.id ? null : feat))
+                  }
+                />
+              </div>
+            ))}
+          </div>
 
+          {/* Mobile Bottom Info */}
+          <div className="mt-8 flex justify-between items-center" ref={buyNowRef}>
+            <div>
+              <div className="text-2xl font-bold">$39,000</div>
+            </div>
+            <button className="relative overflow-hidden bg-black text-white font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform">
+              <span className="relative z-10">BUY NOW</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
+            </button>
+          </div>
+        </div>
 
-  {/* Swipeable Feature Cards */}
-  <div
-    className="flex overflow-x-auto gap-4 pb-2 px-1 -mx-1 no-scrollbar scroll-smooth"
-    ref={mobileScrollRef}
-  >
-    {features.map((feat, index) => (
-      <div key={index} ref={(el) => (mobileCardRefs.current[index] = el)}>
-        <FeatureCard
-          {...feat}
-          horizontal
-          active={selectedFeature?.id === feat.id}
-          onClick={() =>
-            setSelectedFeature((prev) => (prev?.id === feat.id ? null : feat))
-          }
-        />
-      </div>
-    ))}
-  </div>
-
-  {/* Mobile Bottom Info & Buy Button */}
-  <div className="mt-8 flex justify-between items-center">
-    <div>
-      <div className="text-2xl font-bold">$39,000</div>
-    </div>
-    <button className="relative overflow-hidden bg-black text-white font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform">
+       {/* Floating BUY NOW button (shows for mobile & desktop when main button is not visible) */}
+{!isBuyNowVisible && (
+  <div className="fixed bottom-4 right-4 z-50">
+    <button
+      onClick={() => {
+        const isDesktop = window.innerWidth >= 1024;
+        const targetRef = isDesktop ? desktopBuyNowRef : buyNowRef;
+        targetRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }}
+      className="relative overflow-hidden bg-black text-white font-bold py-3 px-6 rounded-full shadow-lg hover:scale-105 transition-transform"
+    >
       <span className="relative z-10">BUY NOW</span>
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
     </button>
   </div>
-</div>
-
+)}
 
 
       </main>
@@ -271,4 +292,3 @@ const VanLayout = () => {
 };
 
 export default VanLayout;
-
