@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import FeatureCard from "../components/FeatureCard";
-import VanModelCanvas from "../components/VanModelCanvas";
+import FeatureCard from "./FeatureCard";
+import VanModelCanvas from "./VanModelCanvas";
 import { ChevronRight, ChevronLeft, ArrowUpRight } from "lucide-react";
 import swivelImg from "../assets/images/swivel.png";
 import dinetteImg from "../assets/images/dinette.png";

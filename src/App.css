@@ -1,3 +1,11 @@
+/* App.css */
+.logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 2px;
+  color: #000;
+}
+
 
 @keyframes shine {
   0% {
