@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import FeatureCard from "./FeatureCard";
-import VanModelCanvas from "./VanModelCanvas";
+import FeatureCard from "../components/FeatureCard";
+import VanModelCanvas from "../components/VanModelCanvas";
 import { ChevronRight, Expand, X } from "lucide-react";
 
 import swivelImg from "../assets/images/swivel.png";
@@ -80,20 +80,43 @@ const VanLayout = () => {
   const mobileCardRefs = useRef([]);
   const buyNowRef = useRef(null);
 
- useEffect(() => {
-  const observer = new IntersectionObserver(
-    ([entry]) => setIsBuyNowVisible(entry.isIntersecting),
-    { threshold: 0.1 }
-  );
+useEffect(() => {
+  const timeoutId = setTimeout(() => {
+    const mobileTarget = buyNowRef.current;
+    const desktopTarget = desktopBuyNowRef.current;
 
-  if (buyNowRef.current) observer.observe(buyNowRef.current);
-  if (desktopBuyNowRef.current) observer.observe(desktopBuyNowRef.current);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsBuyNowVisible(entry.isIntersecting);
+      },
+      {
+        threshold: 0.1,
+      }
+    );
 
-  return () => {
-    if (buyNowRef.current) observer.unobserve(buyNowRef.current);
-    if (desktopBuyNowRef.current) observer.unobserve(desktopBuyNowRef.current);
-  };
+    if (mobileTarget) observer.observe(mobileTarget);
+    if (desktopTarget) observer.observe(desktopTarget);
+
+  
+    const handleResize = () => {
+      const currentTarget =
+        window.innerWidth >= 1024 ? desktopTarget : mobileTarget;
+      if (currentTarget) {
+        observer.disconnect();
+        observer.observe(currentTarget);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", handleResize);
+    };
+  }, 100); 
+  return () => clearTimeout(timeoutId);
 }, []);
+
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -118,7 +141,7 @@ const VanLayout = () => {
     Book Now
   </button>
 </header>
-      <main className="relative min-h-screen">
+      <main className="relative min-h-[100dvh]">
 {/* Desktop View */}
 {!showFullscreen && (
   <>
@@ -128,7 +151,7 @@ const VanLayout = () => {
       </h1>
 
       <div className="flex-1 p-6 bg-gradient-to-br from-white to-neutral-100 rounded-xl overflow-hidden border border-black/10 relative">
-        {/* ✅ Gradient overlay over the entire container */}
+      
         <div className="absolute inset-0 pointer-events-none rounded-xl z-10 bg-gradient-to-t from-[rgba(123,123,123,0.18)] to-[rgba(228,228,228,0)]" />
 
         <button
@@ -230,13 +253,12 @@ const VanLayout = () => {
   </div>
 )}
 
+{/* Mobile View */}
+<div className="lg:hidden w-full min-h-[100dvh] flex flex-col px-4 pt-8 pb-4">
 
- {/* Mobile View */}
-<div className="lg:hidden w-full mt-8 px-4">
+  {/* Canvas and Description */}
   <div className="mb-4 rounded-xl overflow-hidden border border-black/10 bg-gradient-to-br from-white to-neutral-100 relative">
-    {/* 🔹 Gradient overlay over entire card area including padding */}
     <div className="absolute inset-0 pointer-events-none z-10 rounded-xl bg-gradient-to-t from-[rgba(123,123,123,0.12)] to-[rgba(228,228,228,0)]" />
-
     <div className="w-full h-[300px] rounded-lg overflow-hidden relative z-0">
       <VanModelCanvas
         key={selectedFeature?.id}
@@ -245,14 +267,14 @@ const VanLayout = () => {
         cameraPosition={selectedFeature?.cameraPosition}
       />
     </div>
-
     <div className="p-4 relative z-20">
       <h3 className="text-xl font-medium mb-1">{selectedFeature?.title}</h3>
       <p className="text-neutral-700 text-sm">{selectedFeature?.desc}</p>
     </div>
   </div>
 
-  <div className="mb-4 flex justify-end">
+  {/* More Layouts Button */}
+  <div className="mb-2 flex justify-end">
     <button
       onClick={() => console.log("More Layouts clicked")}
       className="flex items-center gap-1 text-neutral-700 font-bold hover:text-black"
@@ -261,6 +283,12 @@ const VanLayout = () => {
     </button>
   </div>
 
+  {/* Layout Features Heading (LEFT aligned) */}
+  <div className="mb-2">
+    <h2 className="text-lg font-bold text-blue-900">Layout Features</h2>
+  </div>
+
+  {/* Horizontal Scroll Cards */}
   <div
     className="flex overflow-x-auto gap-4 pb-2 px-1 -mx-1 no-scrollbar scroll-smooth"
     ref={mobileScrollRef}
@@ -283,8 +311,6 @@ const VanLayout = () => {
     ))}
   </div>
 
-
-
           {/* Mobile Bottom Info */}
           <div className="mt-8 flex justify-between items-center" ref={buyNowRef}>
             <div>
@@ -303,25 +329,24 @@ const VanLayout = () => {
         </div>
 
        {/* Floating BUY NOW button (shows for mobile & desktop when main button is not visible) */}
-{!isBuyNowVisible && (
-  <div className="fixed bottom-4 right-4 z-50">
- <button
-  onClick={() => {
-    const isDesktop = window.innerWidth >= 1024;
-    const targetRef = isDesktop ? desktopBuyNowRef : buyNowRef;
-    targetRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }}
-  className="relative overflow-hidden bg-[#08175e] text-white font-bold px-6 py-2 rounded-full shadow-lg hover:bg-black transition-colors duration-300"
-  style={{ animation: "pulseZoom 2s infinite" }}
->
-  <span className="relative z-10">BUY NOW</span>
-  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
-</button>
+          {!isBuyNowVisible && (
+            <div className="fixed bottom-4 right-4 z-50">
+          <button
+            onClick={() => {
+              const isDesktop = window.innerWidth >= 1024;
+              const targetRef = isDesktop ? desktopBuyNowRef : buyNowRef;
+              targetRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }}
+            className="relative overflow-hidden bg-[#08175e] text-white font-bold px-6 py-2 rounded-full shadow-lg hover:bg-black transition-colors duration-300"
+            style={{ animation: "pulseZoom 2s infinite" }}
+          >
+            <span className="relative z-10">BUY NOW</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
+          </button>
 
 
-  </div>
-)}
-
+            </div>
+          )}
 
       </main>
     </div>

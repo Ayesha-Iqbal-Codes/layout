@@ -1,4 +1,4 @@
-import VanLayout from "./components/VanLayout";
+import VanLayout from "./pages/VanLayout";
 import "./App.css";
 
 function App() {

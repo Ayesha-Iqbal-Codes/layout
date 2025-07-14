@@ -29,7 +29,6 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
         boxShadow: active ? '0 0 6px 2px #0a1e7d' : undefined
       }}
     >
-      {/* Optional visual overlay */}
       {active && (
         <div className="absolute inset-0 rounded-xl pointer-events-none border border-transparent" />
       )}
