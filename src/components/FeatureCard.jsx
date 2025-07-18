@@ -11,13 +11,17 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
         transition-all 
         duration-300 
         flex 
-        ${horizontal ? "flex-row" : "flex-col"} 
+        flex-col 
         gap-3
         hover:shadow-lg
         overflow-hidden
         relative
 
-        ${horizontal ? "min-w-[280px] h-[160px]" : "w-full max-w-[400px] h-[180px]"}
+        ${
+          horizontal
+            ? "min-w-[340px] h-[200px] lg:min-w-[380px] lg:h-[220px]"
+            : "w-full max-w-[400px] h-[200px] lg:h-[220px]"
+        }
 
         ${
           active
@@ -26,41 +30,51 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
         }
       `}
       style={{
-        boxShadow: active ? '0 0 6px 2px #0a1e7d' : undefined
+        boxShadow: active ? "0 0 6px 2px #0a1e7d" : undefined,
       }}
     >
+
+      
+    
       {active && (
         <div className="absolute inset-0 rounded-xl pointer-events-none border border-transparent" />
       )}
 
-      {/* Image container */}
-      <div
-        className={`
-          ${horizontal ? "w-[100px] h-full" : "w-full h-[100px]"} 
-          flex-shrink-0 
-          overflow-hidden 
-          rounded-lg
-          bg-transparent
-          flex items-center justify-center
-        `}
-      >
-        <img
-          src={image}
-          alt={title}
-          className={`w-full h-full object-contain p-2 ${active ? "scale-105" : ""}`}
-          style={{ filter: "none", WebkitFilter: "none" }}
-        />
+       
+      {/* Title on top */}
+      <h3 className="font-semibold text-xl lg:text-xl text-center">{title}</h3>
+
+      {/* Below: Image left, text right */}
+      <div className="flex flex-row gap-4 items-center flex-1">
+        {/* Image container */}
+        <div
+          className={`
+            w-[120px] h-[120px] 
+            lg:w-[120px] lg:h-[120px]
+            flex-shrink-0 
+            overflow-hidden 
+            rounded-lg 
+            bg-transparent 
+            flex items-center justify-center
+          `}
+        >
+          <img
+            src={image}
+            alt={title}
+            className={`w-full h-full object-contain p-2 ${active ? "scale-105" : ""}`}
+            style={{ filter: "none", WebkitFilter: "none" }}
+          />
+        </div>
+
+        {/* Text content */}
+        <div className="flex flex-col flex-1">
+          <p className="text-lg lg:text-lg text-neutral-700 leading-relaxed">
+            {desc}
+          </p>
+        </div>
       </div>
 
-      {/* Text content */}
-      <div className={`flex flex-col ${horizontal ? "flex-1" : ""}`}>
-        <h3 className="font-medium text-lg leading-tight mb-1.5">
-          {title}
-        </h3>
-        <p className="text-neutral-700 text-sm leading-snug">
-          {desc}
-        </p>
-      </div>
+      
     </div>
   );
 };

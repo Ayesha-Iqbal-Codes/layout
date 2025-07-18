@@ -19,8 +19,7 @@ const Model = ({ path, scale }) => {
       modelRef.current.rotation.y += 0.005; 
     }
   });
-
-  
+ 
   useEffect(() => {
     return () => {
       scene?.traverse((child) => {
