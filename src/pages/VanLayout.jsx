@@ -386,6 +386,7 @@ const VanLayout = () => {
       <div className="p-4 relative z-20">
         <h3 className="text-xl font-medium mb-1">{selectedFeature?.title}</h3>
         <p className="text-neutral-700 text-sm">{selectedFeature?.desc}</p>
+        
       </div>
     </div>
 

@@ -34,7 +34,6 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
       }}
     >
 
-      
     
       {active && (
         <div className="absolute inset-0 rounded-xl pointer-events-none border border-transparent" />
@@ -43,6 +42,7 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
        
       {/* Title on top */}
       <h3 className="font-semibold text-xl lg:text-xl text-center">{title}</h3>
+
 
       {/* Below: Image left, text right */}
       <div className="flex flex-row gap-4 items-center flex-1">
