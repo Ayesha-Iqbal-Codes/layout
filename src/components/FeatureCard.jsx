@@ -39,14 +39,10 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
         <div className="absolute inset-0 rounded-xl pointer-events-none border border-transparent" />
       )}
 
-       
-      {/* Title on top */}
       <h3 className="font-semibold text-xl lg:text-xl text-center">{title}</h3>
 
-
-      {/* Below: Image left, text right */}
       <div className="flex flex-row gap-4 items-center flex-1">
-        {/* Image container */}
+  
         <div
           className={`
             w-[120px] h-[120px] 
@@ -66,15 +62,12 @@ const FeatureCard = ({ title, desc, image, onClick, active, horizontal }) => {
           />
         </div>
 
-        {/* Text content */}
         <div className="flex flex-col flex-1">
           <p className="text-lg lg:text-lg text-neutral-700 leading-relaxed">
             {desc}
           </p>
         </div>
-      </div>
-
-      
+      </div>     
     </div>
   );
 };
