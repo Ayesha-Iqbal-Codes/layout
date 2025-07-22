@@ -48,7 +48,7 @@ const VanModelCanvas = ({ modelPath, scale }) => {
       gl={{ alpha: true }}
       shadows
     >
-      {/* Lighting (Fancy setup) */}
+      {/* Lighting */}
       <ambientLight intensity={0.6} />
       <hemisphereLight skyColor="#eaeaea" groundColor="#222222" intensity={0.5} />
       <directionalLight
