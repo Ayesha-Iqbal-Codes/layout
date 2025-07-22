@@ -19,7 +19,7 @@ const features = [
     desc: "Swivel double van seat with recline and bed conversion.",
     image: swivelImg,
     modelPath: "/models/swivel.glb",
-    scale: 0.03,
+    scale: 0.02,
     cameraPosition: [0, 1.4, 16],
   },
   {
@@ -28,7 +28,7 @@ const features = [
     desc: "South/North dinette benches that easily convert to a bed.",
     image: dinetteImg,
     modelPath: "/models/dinette.glb",
-    scale: 0.06,
+    scale: 0.04,
     cameraPosition: [0, 1.4, 16],
   },
   {
