@@ -11,6 +11,8 @@ import heaterImg from "../assets/images/heater.png";
 import storageImg from "../assets/images/storage.png";
 import partitionImg from "../assets/images/partition.png";
 import logo from "../assets/images/logobbv.jpg";
+import "./vanlayout.css"; 
+
 
 const features = [
   {
